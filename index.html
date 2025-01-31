@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Web GUI</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #1a1a1a; /* Start in dark mode */
+      color: #f4f4f9;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Light Mode Styles */
+    body.light-mode {
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    /* Centered Box */
+    .center-box {
+      background-color: #2d2d2d;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: 400px;
+      text-align: center;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    body.light-mode .center-box {
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    
+    /* Moving Gradient Animation on Text Only */
+        h1 {
+    font-size: 2.5rem;
+    display: inline-block;
+    background: #ffd700;
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 2s ease-in-out;
+    }
+
+    
+
+    h2 {
+        font-size: 0.9rem;
+        font-family: 'Merriweather'
+    }
+
+    h2 a {
+        color: inherit;  /* Inherits the text color from the parent h2 */
+        text-decoration: none;  /* Removes underline */
+    }
+
+    h2 a:hover {
+        text-decoration: underline; /* Optional: Adds underline on hover */
+    }
+
+    /* Input Fields */
+    input {
+      width: 80%;
+      padding: 0.75rem;
+      margin: 0.5rem auto;
+      border: 1px solid #666;
+      border-radius: 5px;
+      font-size: 1rem;
+      background-color: #444;
+      color: #f4f4f9;
+      transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+    }
+
+    body.light-mode input {
+      background-color: #fff;
+      border-color: #ccc;
+      color: #333;
+    }
+
+    /* Buttons */
+    button {
+      padding: 0.75rem 1.5rem;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    body.light-mode button {
+      background-color: #005bb5;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    body.light-mode button:hover {
+      background-color: #004080;
+    }
+
+    /* Dark Mode Toggle Switch */
+    .mode-switch {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+    }
+
+    .mode-switch label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .mode-switch input[type="checkbox"] {
+      display: none;
+    }
+
+    .mode-switch .slider {
+      width: 50px;
+      height: 25px;
+      background-color: #ccc;
+      border-radius: 25px;
+      position: relative;
+      transition: background-color 0.3s;
+    }
+
+    .mode-switch .slider::before {
+      content: "";
+      width: 21px;
+      height: 21px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+
+    .mode-switch input[type="checkbox"]:checked + .slider {
+      background-color: #007bff;
+    }
+
+    .mode-switch input[type="checkbox"]:checked + .slider::before {
+      transform: translateX(25px);
+    }
+
+    /* Responsive Positioning */
+    @media (max-width: 600px) {
+      .mode-switch {
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <!-- Dark Mode Toggle Switch -->
+  <div class="mode-switch">
+    <label>
+      <input type="checkbox" id="mode-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <!-- Centered Box -->
+  <div class="center-box">
+    <h1>Investment Calculator</h1>
+    <h2>Made with bad intentions by <a href="https://github.com/TaxFraudTutorial" target="_blank"><u>TaxFraudTutorial</u></a> 😈</h2>
+    <input type="number" placeholder="Principal Amount" id="principal">
+    <input type="number" placeholder="Interest Rate (%)" id="rate">
+    <input type="number" placeholder="Years" id="years">
+    <button onclick="calculate()">Calculate</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    // Dark Mode Toggle
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    // Load saved mode preference
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode === 'light-mode') {
+      body.classList.add('light-mode');
+      modeToggle.checked = false;
+    } else {
+      body.classList.remove('light-mode');
+      modeToggle.checked = true;
+    }
+
+    // Toggle mode and save preference
+    modeToggle.addEventListener('change', () => {
+      body.classList.toggle('light-mode');
+      const currentMode = body.classList.contains('light-mode') ? 'light-mode' : 'dark-mode';
+      localStorage.setItem('mode', currentMode);
+    });
+
+    // Example Calculation Function
+    function calculate() {
+      const principal = parseFloat(document.getElementById('principal').value);
+      const rate = parseFloat(document.getElementById('rate').value);
+      const years = parseFloat(document.getElementById('years').value);
+
+      if (isNaN(principal) || isNaN(rate) || isNaN(years)) {
+        document.getElementById('result').textContent = "Please enter valid numbers.";
+        return;
+      }
+
+      const futureValue = principal * Math.pow(1 + rate / 100, years);
+      document.getElementById('result').textContent = `Future Value: $${futureValue.toFixed(2)}`;
+    }
+
+
+  </script>
+</body>
+</html>
